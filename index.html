@@ -25,15 +25,36 @@
         </div>
     </div>
     <script>
-        document.getElementById('journalForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
-            const entry = document.createElement('div');
-            entry.className = 'bg-gray-200 p-4 rounded-lg mb-4';
-            entry.innerHTML = `<h2 class="text-xl font-bold mb-2">${title}</h2><p>${content}</p>`;
-            document.getElementById('entries').appendChild(entry);
-            document.getElementById('journalForm').reset();
+        document.addEventListener('DOMContentLoaded', () => {
+            const entriesContainer = document.getElementById('entries');
+            const journalForm = document.getElementById('journalForm');
+            const titleInput = document.getElementById('title');
+            const contentInput = document.getElementById('content');
+
+            const loadEntries = () => {
+                const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+                entriesContainer.innerHTML = '';
+                entries.forEach(entry => {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.className = 'bg-gray-200 p-4 rounded-lg mb-4';
+                    entryDiv.innerHTML = `<h2 class="text-xl font-bold mb-2">${entry.title}</h2><p>${entry.content}</p>`;
+                    entriesContainer.appendChild(entryDiv);
+                });
+            };
+
+            journalForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const title = titleInput.value;
+                const content = contentInput.value;
+                const newEntry = { title, content };
+                const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+                entries.push(newEntry);
+                localStorage.setItem('journalEntries', JSON.stringify(entries));
+                loadEntries();
+                journalForm.reset();
+            });
+
+            loadEntries();
         });
     </script>
 </body>
